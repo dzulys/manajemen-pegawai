@@ -2,48 +2,75 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pegawai;
+use App\Models\Employee;
+use App\Models\Position;
 use Illuminate\Http\Request;
 
 class PegawaiController extends Controller
 {
-    // Tampil data di Landing Page
     public function index()
     {
-        $pegawai = Pegawai::all();
+        $pegawai = Employee::with('position')->get(); 
         return view('pegawai.index', compact('pegawai'));
     }
 
-    // Halaman tambah data
     public function create()
     {
-        return view('pegawai.create');
+        $jabatan = Position::all();
+        return view('pegawai.create', compact('jabatan'));
     }
 
-    // Simpan data ke database
     public function store(Request $request)
     {
-        Pegawai::create($request->all());
+        $request->validate([
+            'nip' => 'required|unique:employees',
+            'name' => 'required',
+            'email' => 'required|email|unique:employees',
+            'password' => 'required',
+            'position_id' => 'required',
+            'join_date' => 'required|date',
+        ]);
+
+        Employee::create([
+            'nip' => $request->nip,
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'position_id' => $request->position_id,
+            'address' => $request->address,
+            'phone' => $request->phone,
+            'join_date' => $request->join_date,
+        ]);
+
         return redirect()->route('pegawai.index')->with('success', 'Data Pegawai Berhasil Ditambah!');
     }
 
-    // Halaman edit data
-    public function edit(Pegawai $pegawai)
+    public function edit($id)
     {
-        return view('pegawai.edit', compact('pegawai'));
+        $pegawai = Employee::findOrFail($id);
+        $jabatan = Position::all();
+        return view('pegawai.edit', compact('pegawai', 'jabatan'));
     }
 
-    // Update data
-    public function update(Request $request, Pegawai $pegawai)
+    public function update(Request $request, $id)
     {
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:employees,email,' . $id,
+            'position_id' => 'required',
+        ]);
+
+        $pegawai = Employee::findOrFail($id);
         $pegawai->update($request->all());
-        return redirect()->route('pegawai.index')->with('success', 'Data Berhasil Diubah!');
+
+        return redirect()->route('pegawai.index')->with('success', 'Data Pegawai Berhasil Diperbarui!');
     }
 
-    // Hapus data
-    public function destroy(Pegawai $pegawai)
+    public function destroy($id)
     {
+        $pegawai = Employee::findOrFail($id);
         $pegawai->delete();
-        return redirect()->route('pegawai.index')->with('success', 'Data Berhasil Dihapus!');
+
+        return redirect()->route('pegawai.index')->with('success', 'Data Pegawai Berhasil Dihapus!');
     }
 }
