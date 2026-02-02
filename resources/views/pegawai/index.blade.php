@@ -42,7 +42,7 @@
                                         <input type="hidden" name="pegawai_id" value="{{ $p->id }}">
                                         <div class="btn-group">
                                             <button name="status" value="Hadir" class="btn btn-sm btn-success">Hadir</button>
-                                            <button name="status" value="Izin" class="btn btn-sm btn-warning">Izin</button>
+                                            <a href="{{ route('absensi.create', ['pegawai_id' => $p->id]) }}" class="btn btn-sm btn-warning">Izin / Sakit</a>
                                         </div>
                                     </form>
                                 </td>

@@ -33,7 +33,7 @@
                 <div class="icon">
                     <i class="fas fa-check-circle"></i>
                 </div>
-                <a href="#" class="small-box-footer link-light link-underline-opacity-0">
+                <a href="{{ route('absensi.index') }}" class="small-box-footer link-light link-underline-opacity-0">
                     Lihat Absensi <i class="fas fa-arrow-circle-right"></i>
                 </a>
             </div>
@@ -48,7 +48,7 @@
                 <div class="icon">
                     <i class="fas fa-user-injured"></i>
                 </div>
-                <a href="#" class="small-box-footer link-light link-underline-opacity-0">
+                <a href="{{ route('absensi.approvals') }}" class="small-box-footer link-light link-underline-opacity-0">
                     Lihat Pengajuan <i class="fas fa-arrow-circle-right"></i>
                 </a>
             </div>
@@ -63,7 +63,7 @@
                 <div class="icon">
                     <i class="fas fa-briefcase"></i>
                 </div>
-                <a href="#" class="small-box-footer link-light link-underline-opacity-0">
+                <a href="{{ route('pegawai.index') }}" class="small-box-footer link-light link-underline-opacity-0">
                     Kelola Jabatan <i class="fas fa-arrow-circle-right"></i>
                 </a>
             </div>
@@ -73,11 +73,20 @@
     <div class="row mt-4">
         <div class="col-lg-12">
             <div class="card card-primary card-outline">
-                <div class="card-header">
-                    <h3 class="card-title">
+                <div class="card-header d-flex align-items-center">
+                    <h3 class="card-title me-3">
                         <i class="fas fa-chart-line me-1"></i>
-                        Statistik Kehadiran (Minggu Ini)
+                        Statistik Kehadiran
                     </h3>
+
+                    <div class="ms-auto d-flex align-items-center">
+                        <label class="me-2 mb-0 small text-muted">Pilih Minggu:</label>
+                        <select id="weekSelect" class="form-select form-select-sm">
+                            @foreach($weeks as $wk)
+                                <option value="{{ $wk['start'] }}">{{ $wk['label'] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
                 <div class="card-body">
                     <canvas id="absensiChart" style="height: 300px; width: 100%;"></canvas>
@@ -91,13 +100,18 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var ctx = document.getElementById('absensiChart').getContext('2d');
+
+        var initialLabels = @json($labels);
+        var initialData = @json($data);
+        var attendanceUrl = '{{ route('dashboard.attendance') }}';
+
         var myChart = new Chart(ctx, {
-            type: 'line', // Jenis grafik: Garis
+            type: 'line',
             data: {
-                labels: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+                labels: initialLabels,
                 datasets: [{
                     label: 'Jumlah Pegawai Hadir',
-                    data: [12, 19, 15, 17, 14, 10], // Data contoh
+                    data: initialData,
                     borderColor: '#007bff',
                     backgroundColor: 'rgba(0, 123, 255, 0.1)',
                     borderWidth: 2,
@@ -112,6 +126,25 @@
                     y: { beginAtZero: true }
                 }
             }
+        });
+
+        // Set default selected to first option (minggu ini)
+        var weekSelect = document.getElementById('weekSelect');
+        weekSelect.selectedIndex = 0;
+
+        weekSelect.addEventListener('change', function () {
+            var start = this.value;
+            fetch(attendanceUrl + '?start=' + start)
+                .then(function (res) { return res.json(); })
+                .then(function (json) {
+                    if (json.labels && json.data) {
+                        myChart.data.labels = json.labels;
+                        myChart.data.datasets[0].data = json.data;
+                        myChart.update();
+                    }
+                }).catch(function (err) {
+                    console.error('Error fetching attendance data', err);
+                });
         });
     });
 </script>

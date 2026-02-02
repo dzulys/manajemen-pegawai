@@ -6,14 +6,28 @@ use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AbsensiController;
 
-// 1. Halaman Utama: Menampilkan Dashboard Statistik
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+// 1. Halaman Utama: Landing page setelah login
+Route::redirect('/', '/home');
+
+// Halaman Dashboard (hanya admin)
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');
+
+// API: Statistik kehadiran per minggu (untuk chart)
+Route::get('/dashboard/attendance', [DashboardController::class, 'attendanceByWeek'])
+    ->name('dashboard.attendance')
+    ->middleware('auth');
 
 // 2. Route Pengelolaan Data Pegawai (Otomatis: index, create, store, edit, update, destroy)
 Route::resource('pegawai', PegawaiController::class);
 
 // 3. Route untuk Menyimpan Absensi (Memperbaiki error Route not defined)
 Route::post('/absensi/store', [AbsensiController::class, 'store'])->name('absensi.store');
+
+// Halaman Absen
+Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index')->middleware('auth');
+Route::get('/absensi/create', [AbsensiController::class, 'create'])->name('absensi.create')->middleware('auth');
+Route::get('/absensi/pengajuan', [AbsensiController::class, 'approvals'])->name('absensi.approvals')->middleware('auth');
+Route::get('/absensi/{id}', [AbsensiController::class, 'show'])->name('absensi.show')->middleware('auth');
 
 // 4. Route Sistem Login & Registrasi
 Auth::routes();

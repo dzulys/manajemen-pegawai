@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL; // Baris ini ditambahkan untuk memperbaiki error
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Memaksa semua asset (CSS/JS) menggunakan HTTPS jika di server production
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
     }
 }

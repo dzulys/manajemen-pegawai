@@ -57,3 +57,14 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+---
+
+## Important: vendor not included 🚫
+
+The `vendor/` directory is intentionally **not** stored in this repository. After cloning the project, install dependencies locally:
+
+- Run `composer install` to install PHP dependencies (this will create the `vendor/` directory).
+- Run `npm install` and `npm run build` if you need to compile front-end assets.
+
+If you find `vendor/` present in the remote repository, let me know and I can help remove it from the repository history safely.
