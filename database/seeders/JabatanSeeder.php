@@ -4,24 +4,28 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class JabatanSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Menghapus data lama agar tidak duplikat saat dijalankan ulang
-        DB::table('jabatans')->truncate();
+        // Nonaktifkan pengecekan foreign key agar bisa truncate
+        Schema::disableForeignKeyConstraints();
 
-        // Mengisi data jabatan ke database Railway
-        DB::table('jabatans')->insert([
-            ['nama_jabatan' => 'Manager', 'created_at' => now(), 'updated_at' => now()],
-            ['nama_jabatan' => 'Staff IT', 'created_at' => now(), 'updated_at' => now()],
-            ['nama_jabatan' => 'Admin HR', 'created_at' => now(), 'updated_at' => now()],
-            ['nama_jabatan' => 'Marketing', 'created_at' => now(), 'updated_at' => now()],
-            ['nama_jabatan' => 'Finance', 'created_at' => now(), 'updated_at' => now()],
+        // Gunakan nama tabel 'positions' sesuai migration Anda
+        DB::table('positions')->truncate();
+
+        // Masukkan data dengan kolom 'name' dan 'salary'
+        DB::table('positions')->insert([
+            ['name' => 'Manager', 'salary' => 10000000, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Staff IT', 'salary' => 8000000, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Admin HR', 'salary' => 7000000, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Marketing', 'salary' => 7500000, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Finance', 'salary' => 8500000, 'created_at' => now(), 'updated_at' => now()],
         ]);
+
+        // Aktifkan kembali pengecekan foreign key
+        Schema::enableForeignKeyConstraints();
     }
 }

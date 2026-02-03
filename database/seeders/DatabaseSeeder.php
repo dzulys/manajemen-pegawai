@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Admin Utama',
             'email' => 'AdminBarudak@gmail.com',
             'password' => Hash::make('AdminBarudak!@gmail.com'), // Password sesuai permintaan Anda
-            'role' => 'admin', // Memastikan akun ini langsung menjadi admin
+            'is_admin' => '1', // Memastikan akun ini langsung menjadi admin
         ]);
     }
 }
